@@ -24,13 +24,17 @@ const ShopItem: React.FC<{
 const CartItem: React.FC<{
   item: LineItem;
   onRemove: () => void;
-}> = function ({ item: lineitem, onRemove }) {
+  onAdd: () => void;
+  onSub: () => void;
+}> = function ({ item: lineitem, onRemove, onAdd, onSub }) {
   const { item, quantity } = lineitem;
   return (
     <div>
       <p>Item ID: {item}</p>
       <p>Quantity: {quantity}</p>
       <button onClick={onRemove}>Remove item</button>
+      <button onClick={onAdd}>+</button>
+      <button onClick={onSub}>-</button>
     </div>
   );
 };
@@ -52,8 +56,30 @@ const Demo: React.FC = function () {
     }
   }
 
+  function addItem(index: number) {
+    const isExist = cart[index];
+    cart.splice(index, 1);
+    setCart([...cart, { item: isExist.item, quantity: isExist.quantity + 1 }]);
+  }
+
+  function subItem(index: number) {
+    const isExist = cart[index];
+    if (isExist.quantity - 1 >= 1) {
+      cart.splice(index, 1);
+      setCart([
+        ...cart,
+        { item: isExist.item, quantity: isExist.quantity - 1 }
+      ]);
+    }
+  }
+
   function removeItem(index: number) {
     cart.splice(index, 1);
+    setCart([...cart]);
+  }
+
+  function removeAll() {
+    cart.splice(0, cart.length);
     setCart([...cart]);
   }
 
@@ -64,11 +90,14 @@ const Demo: React.FC = function () {
         <ShopItem key={item.id} item={item} onAdd={() => addItemToCart(item)} />
       ))}
       <p> Cart items: </p>
+      <button onClick={() => removeAll()}>Remove all item in cart?</button>
       {cart.map((item, index) => (
         <CartItem
           key={item.item}
           item={item}
           onRemove={() => removeItem(index)}
+          onAdd={() => addItem(index)}
+          onSub={() => subItem(index)}
         />
       ))}
     </div>
