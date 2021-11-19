@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getAllItems } from "./core.ts";
 
 interface LineItem {
@@ -39,8 +39,27 @@ const CartItem: React.FC<{
   );
 };
 
+const Component: React.FC<{
+  count: number;
+  setCount: (x: number) => void;
+}> = function ({ count, setCount }) {
+  useEffect(() => {
+    return () => {
+      console.log("Cleaning");
+      setCount(0);
+    };
+  }, []);
+
+  return (
+    <div>
+      <p> Total Sum: {count}</p>
+    </div>
+  );
+};
+
 const Demo: React.FC = function () {
   const [cart, setCart] = useState<LineItem[]>([]);
+  const [count, setCount] = useState<number>(0);
   const shopItems = getAllItems();
 
   function addItemToCart(item: Item) {
@@ -90,6 +109,17 @@ const Demo: React.FC = function () {
     setCart([...cart]);
   }
 
+  function calSum() {
+    //console.log(inventory.find(u => u.name === 'cherries'));
+    var sum = 0;
+    cart.forEach((element) => {
+      let this_shopitem = shopItems.find((u) => u.id === element.item);
+      var total = this_shopitem.price * element.quantity;
+      sum = sum + total;
+    });
+    setCount(sum);
+  }
+
   return (
     <div>
       <p>Student name: Li Man </p>
@@ -99,7 +129,6 @@ const Demo: React.FC = function () {
         <ShopItem key={item.id} item={item} onAdd={() => addItemToCart(item)} />
       ))}
       <p> Cart items: </p>
-      <p> Current Total: </p>{" "}
       <button onClick={() => removeAll()}>Remove all item in cart?</button>
       {cart.map((item, index) => (
         <CartItem
@@ -110,6 +139,9 @@ const Demo: React.FC = function () {
           onSub={() => subItem(index)}
         />
       ))}
+      <p></p>
+      <Component count={count} setCount={setCount} />
+      <button onClick={() => calSum()}>calculate sum?</button>
     </div>
   );
 };
