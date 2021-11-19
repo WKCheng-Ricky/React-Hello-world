@@ -40,13 +40,23 @@ const Demo: React.FC = function () {
   const shopItems = getAllItems();
 
   function addItemToCart(item: Item) {
-    setCart([...cart, { item: item.id, quantity: 1 }]);
+    const this_id = item.id;
+    const isExist = cart.find(({ item }) => item === this_id);
+    const foundIndex = cart.findIndex(({ item }) => item === this_id);
+
+    if (isExist == null) {
+      setCart([...cart, { item: item.id, quantity: 1 }]);
+    } else {
+      cart.splice(foundIndex, 1);
+      setCart([...cart, { item: item.id, quantity: isExist.quantity + 1 }]);
+    }
   }
 
   function removeItem(index: number) {
     cart.splice(index, 1);
     setCart([...cart]);
   }
+
   return (
     <div>
       <p> Items: </p>
