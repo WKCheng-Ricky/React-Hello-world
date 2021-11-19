@@ -45,31 +45,38 @@ const Demo: React.FC = function () {
 
   function addItemToCart(item: Item) {
     const this_id = item.id;
-    const isExist = cart.find(({ item }) => item === this_id);
+    const lineitem = cart.find(({ item }) => item === this_id);
+    const isExist = lineitem == null ? false : true;
     const foundIndex = cart.findIndex(({ item }) => item === this_id);
 
-    if (isExist == null) {
+    if (!isExist) {
       setCart([...cart, { item: item.id, quantity: 1 }]);
     } else {
-      cart.splice(foundIndex, 1);
-      setCart([...cart, { item: item.id, quantity: isExist.quantity + 1 }]);
+      cart.splice(foundIndex, 1, {
+        item: lineitem.item,
+        quantity: lineitem.quantity + 1
+      });
+      setCart([...cart]);
     }
   }
 
   function addItem(index: number) {
-    const isExist = cart[index];
-    cart.splice(index, 1);
-    setCart([...cart, { item: isExist.item, quantity: isExist.quantity + 1 }]);
+    const lineitem = cart[index];
+    cart.splice(index, 1, {
+      item: lineitem.item,
+      quantity: lineitem.quantity + 1
+    });
+    setCart([...cart]);
   }
 
   function subItem(index: number) {
-    const isExist = cart[index];
-    if (isExist.quantity - 1 >= 1) {
-      cart.splice(index, 1);
-      setCart([
-        ...cart,
-        { item: isExist.item, quantity: isExist.quantity - 1 }
-      ]);
+    const lineitem = cart[index];
+    if (lineitem.quantity - 1 >= 1) {
+      cart.splice(index, 1, {
+        item: lineitem.item,
+        quantity: lineitem.quantity - 1
+      });
+      setCart([...cart]);
     }
   }
 
@@ -85,11 +92,14 @@ const Demo: React.FC = function () {
 
   return (
     <div>
+      <p>Student name: Li Man </p>
+      <p>Studnet ID: s187212</p>
       <p> Items: </p>
       {shopItems.map((item) => (
         <ShopItem key={item.id} item={item} onAdd={() => addItemToCart(item)} />
       ))}
       <p> Cart items: </p>
+      <p> Current Total: </p>{" "}
       <button onClick={() => removeAll()}>Remove all item in cart?</button>
       {cart.map((item, index) => (
         <CartItem
